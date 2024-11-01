@@ -15,6 +15,10 @@
   # release notes.
   home.stateVersion = "24.05"; # Please read the comment before changing.
 
+  home.sessionPath = [
+    # TODO: "$HOME/.local/bin"
+  ];
+
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = [
@@ -23,6 +27,7 @@
     pkgs.neovim
     pkgs.python3
     pkgs.zellij
+    pkgs.rustup
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -77,13 +82,99 @@
       v = "nvim";
       vim = "nvim";
       lg = "lazygit";
-      # Should stop using the next 2
-      gs = "git status";
-      gd = "git diff";
   };
 
   home.sessionVariables = {
     EDITOR = "nvim";
+  };
+
+ programs.git = {
+   enable = true;
+   userName = "Mark Keller";
+   userEmail = "8452750+keller00@users.noreply.github.com";
+   ignores = [
+      ".activate.sh"
+      ".deactivate.sh"
+      ".idea"
+      ".vscode"
+      ".tox"
+      ".mypy_cache"
+   ];
+   includes = [
+      {path = "~/.gitconfig.local";}
+   ];
+   aliases = {
+     st = "status";
+     d = "diff";
+   };
+   extraConfig = {
+       core = {
+           whitespace = "space-before-tab,trailing-space";
+           autocrlf = "input";
+       init = {
+           defaultBranch = "main";
+           templateDir = "~/.git-template";
+       };
+       pull = {
+           rebase = true;
+       };
+       rebase = {
+           autostash = true;
+       };
+   };
+ }; 
+};
+
+  programs.zsh = {
+    enable=true;
+    enableCompletion = true;
+    initExtraBeforeCompInit = ''
+      zstyle ':completion:*' completer _complete _ignored _correct
+      zstyle ':completion:*' max-errors 3
+      CASE_SENSITIVE="true";
+    '';
+    initExtra = ''
+      setopt nomatch notify
+      unsetopt autocd beep extendedglob
+      # TOOD: doesn't seem to work HIST_STAMPS="yyyy-mm-dd"     # Add timstamps to history entries.
+      setopt INC_APPEND_HISTORY    # Write to the history file immediately, not when the shell exits.
+      setopt HIST_NO_STORE         # Don't store history commands
+      setopt HIST_REDUCE_BLANKS    # Remove superfluous blanks from each command line being added to the history.
+
+      # Make virtualenvs reproducible
+      export VIRTUALENV_PIP="embed"
+      export VIRTUALENV_SETUPTOOLS="embed"
+      export VIRTUALENV_WHEEL="embed"
+      export VIRTUALENV_NO_PERIODIC_UPDATE="True"
+      
+      # TODO: eval "$(aactivator init)"
+      bindkey "^[[1;5C" forward-word
+      bindkey "^[[1;5D" backward-word
+      bindkey "^[[H" beginning-of-line
+      bindkey "^[[F" end-of-line
+      bindkey "^R" history-incremental-search-backward
+      bindkey "\e[3~" delete-char
+      # TODO
+      if [[ -f "$HOME/.cargo/env" ]]; then
+        . "$HOME/.cargo/env"
+      fi
+    '';
+    history = {
+      share = true;
+      ignoreDups = true;
+      ignoreSpace = true;
+      ignorePatterns = [
+        "ls *"
+        "cd *"
+        "pwd *"
+        "exit *"
+      ];
+    };
+  };
+
+  programs.zellij = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   # Let Home Manager install and manage itself.
