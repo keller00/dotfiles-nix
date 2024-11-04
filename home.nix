@@ -158,6 +158,10 @@
       if [[ -f "$HOME/.cargo/env" ]]; then
         . "$HOME/.cargo/env"
       fi
+
+      . $HOME/.config/zsh/themes/oxide/oxide.zsh-theme
+      . $HOME/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+      . $HOME/.config/zsh/plugins/zsh-window-title/zsh-window-title.plugin.zsh
     '';
     history = {
       share = true;
@@ -179,4 +183,11 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  home.file = {
+    ".config/zsh" = {
+      source = ./zsh;
+      recursive = true;
+    };
+  };
 }
