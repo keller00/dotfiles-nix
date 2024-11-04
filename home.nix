@@ -28,6 +28,7 @@
     pkgs.python3
     pkgs.zellij
     pkgs.rustup
+    pkgs.silver-searcher
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
